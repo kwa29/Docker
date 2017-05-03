@@ -1,4 +1,5 @@
-FROM        quay.io/prometheus/busybox:latest
+FROM 		quay.io/prometheus/busybox:latest
+ADD 		prometheus.yml /etc/prometheus/
 MAINTAINER  The Prometheus Authors <prometheus-developers@googlegroups.com>
 
 COPY prometheus                             /bin/prometheus
