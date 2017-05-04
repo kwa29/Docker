@@ -1,19 +1,22 @@
-FROM 		quay.io/prometheus/busybox:latest
-MAINTAINER  The Prometheus Authors <prometheus-developers@googlegroups.com>
+FROM debian:jessie
 
-COPY prometheus                             /bin/prometheus
-COPY promtool                               /bin/promtool
-COPY documentation/examples/prometheus.yml  /etc/prometheus/prometheus.yml
-COPY console_libraries/                     /usr/share/prometheus/console_libraries/
-COPY consoles/                              /usr/share/prometheus/consoles/
+ARG DOWNLOAD_URL
 
-RUN ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install libfontconfig curl ca-certificates && \
+    apt-get clean && \
+    curl ${DOWNLOAD_URL} > /tmp/grafana.deb && \
+    dpkg -i /tmp/grafana.deb && \
+    rm /tmp/grafana.deb && \
+    curl -L https://github.com/tianon/gosu/releases/download/1.7/gosu-amd64 > /usr/sbin/gosu && \
+    chmod +x /usr/sbin/gosu && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
 
-EXPOSE     9090
-VOLUME     [ "/prometheus" ]
-WORKDIR    /prometheus
-ENTRYPOINT [ "/bin/prometheus" ]
-CMD        [ "-config.file=/etc/prometheus/prometheus.yml", \
-             "-storage.local.path=/prometheus", \
-             "-web.console.libraries=/usr/share/prometheus/console_libraries", \
-             "-web.console.templates=/usr/share/prometheus/consoles" ]
+VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
+
+EXPOSE 3000
+
+COPY ./run.sh /run.sh
+
+ENTRYPOINT ["/run.sh"]
