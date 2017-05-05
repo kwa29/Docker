@@ -1,9 +1,9 @@
 FROM debian:jessie
 
 ARG DOWNLOAD_URL
-
-RUN apt-get update
-RUN apt-get -y --no-install-recommends apt-utils install libfontconfig curl ca-certificates
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install --assume-yes apt-utils
+RUN apt-get -y install libfontconfig curl ca-certificates
 RUN apt-get clean && \
     curl ${DOWNLOAD_URL} > /tmp/grafana.deb && \
     dpkg -i /tmp/grafana.deb && \
