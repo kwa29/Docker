@@ -1,17 +1,8 @@
 FROM debian:jessie
 
-ARG DOWNLOAD_URL
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --assume-yes apt-utils
 RUN apt-get -y install libfontconfig curl ca-certificates
-RUN apt-get clean && \
-    curl ${DOWNLOAD_URL} > /tmp/grafana.deb && \
-    dpkg -i /tmp/grafana.deb && \
-    rm /tmp/grafana.deb && \
-    curl -L https://github.com/tianon/gosu/releases/download/1.7/gosu-amd64 > /usr/sbin/gosu && \
-    chmod +x /usr/sbin/gosu && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
 
 VOLUME ["/var/lib/grafana", "/var/log/grafana", "/etc/grafana"]
 
